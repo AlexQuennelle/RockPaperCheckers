@@ -8,12 +8,10 @@ internal static class Program
 	public static void Main()
 	{
 		Raylib.InitWindow(800,400,"Rock Paper Checkers");
+		Game rpc = new();
 
-		while (!Raylib.WindowShouldClose())
-		{
-			Raylib.BeginDrawing();
-			Raylib.ClearBackground(new(100,149,237,255));
-			Raylib.EndDrawing();
-		}
+		rpc.Run();
+
+		Raylib.CloseWindow();
 	}
 }
