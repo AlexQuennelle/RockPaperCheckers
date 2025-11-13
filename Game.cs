@@ -6,17 +6,24 @@ internal class Game
 {
 	private readonly Point _gridSize;
 	private readonly int _cellSize;
+	private GamePiece?[,] _board;
+
+	private PieceTeam _currentTurn = PieceTeam.Player1;
 
 	public Game(Point gridSize, int cellSize)
 	{
+		Raylib.SetConfigFlags(ConfigFlags.Msaa4xHint);
 		Raylib.InitWindow(
-			gridSize.X * cellSize,
+			(gridSize.X * cellSize) + (cellSize * 3),
 			gridSize.Y * cellSize,
 			"Rock Paper Checkers"
 		);
 
 		_gridSize = gridSize;
 		_cellSize = cellSize;
+
+		_board = new GamePiece?[gridSize.X, gridSize.Y];
+		_board[0, 0] = new(PieceTeam.Player2, PieceType.Red);
 	}
 	~Game()
 	{
@@ -44,10 +51,25 @@ internal class Game
 		{
 			for (int y = 0; y < _gridSize.Y; y++)
 			{
-				int col = ((x % 2) + y) % 2 * 255;
+				int col = ((x % 2) + y) % 2 * 80 + 175;
 				Raylib.DrawRectangleRec(
-					rec: new(x * 100, y * 100, 100.0f, 100.0f),
-					color: new(col, col, col, 255)
+					new(x * _cellSize, y * _cellSize, _cellSize, _cellSize),
+					new(col, col, col, 255)
+				);
+
+				if (_board[x, y] != null)
+				{
+					_board[x, y].Draw(_currentTurn, new(x, y), _cellSize);
+				}
+
+				int turnSide = (int)_currentTurn == 1
+					? 0
+					: _cellSize * (_gridSize.Y - 1);
+
+				Raylib.DrawRectangleLinesEx(
+					new(0.0f, turnSide, _gridSize.X * _cellSize, _cellSize),
+					_cellSize * 0.05f,
+					Color.Yellow
 				);
 			}
 		}
